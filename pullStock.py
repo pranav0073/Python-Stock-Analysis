@@ -8,14 +8,29 @@ Created on Wed Jul 30 00:47:16 2014
 import urllib2
 import time
 
-StockToPull = "ITC.NS"
+StocksToPull = 'ITC.NS','BHEL.NS','idfc.NS'
 
 def pullData(stock):
     try:
         fileLine = stock+'.txt'
         urlToVisit = 'http://chartapi.finance.yahoo.com/instrument/1.0/'+stock+'/chartdata;type=quote;range=1y/csv'
+        #alt = 'localhost/ITC.csv'        
         sourceCode = urllib2.urlopen(urlToVisit).read()
-        print sourceCode
+        splitSource = sourceCode.split('\n')
+        
+        for eachLine in splitSource:
+           splitLine = eachLine.split(',')
+           if len(splitLine) == 6:
+               if 'values' not in eachLine:
+                   saveFile = open(fileLine,'a')
+                   lineToWrite = eachLine+'\n'
+                   saveFile.write(lineToWrite)
+        print "stock pulled", stock
+        print 'sleeping'
+        time.sleep(5)
+        
     except Exception,e:
         print "main loop fail "+(e)
-pullData(StockToPull);
+
+for eachStock in StocksToPull:
+    pullData(eachStock);
